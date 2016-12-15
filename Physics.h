@@ -48,7 +48,7 @@ private:
 public:
 
     Physics();
-    void update(int deltaTime);
+    void update(GLfloat deltaTime);
     void add(GraphicsObject* model, GLfloat mass, glm::vec3 initialPosition);
     ~Physics();
 };

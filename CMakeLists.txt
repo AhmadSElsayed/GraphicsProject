@@ -3,7 +3,7 @@ Project (Loader)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 ##############get all files in the folder##############3
 file (GLOB SOURCE_FILES "*.cpp" "*.h" "*.frag" "*.vs")
-add_executable(Loader ${SOURCE_FILES} Camera.cpp GraphicsObject.cpp Mesh.cpp Model.cpp Sameh.cpp Shader.cpp)
+add_executable(Loader ${SOURCE_FILES})
 set_target_properties(Loader PROPERTIES LINKER_LANGUAGE CXX)
 ######link ALl LIbs###################
 target_link_libraries(Loader -lGL -lglfw -lGLEW -lSOIL -lassimp )

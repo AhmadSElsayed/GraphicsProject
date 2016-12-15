@@ -12,18 +12,17 @@ Physics::Physics()
     dynamicsWorld->setGravity(btVector3(0, -9.81f, 0));
 }
 
-void Physics::update(int deltaTime)
+void Physics::update(GLfloat deltaTime)
 {
 
     dynamicsWorld->stepSimulation(deltaTime,10);
     btTransform trans;
-
-    for(PhysicsObject p : physicsObjects)
+    for(int i =0; i<physicsObjects.size(); i++)
     {
-        if(p.dynamic)
-            p.object->getMotionState()->getWorldTransform(trans);
-        p.model->Transform(trans);
-        p.object->setActivationState(ACTIVE_TAG);
+        trans.setIdentity();
+        if(physicsObjects[i].dynamic)
+            physicsObjects[i].object->getMotionState()->getWorldTransform(trans);
+        physicsObjects[i].model->Transform(trans);
     }
 
 
@@ -57,7 +56,7 @@ Physics::~Physics()
 void Physics::add(GraphicsObject *model, GLfloat mass, glm::vec3 initialPosition)
 {
     PhysicsObject physicsObject;
-    if(mass)
+    if(mass != 0)
         loadDynamicCollisionShape(&physicsObject, *(model->getModel()));
     else
         loadStaticCollisionShape(&physicsObject, *(model->getModel()));
@@ -107,6 +106,7 @@ void Physics::loadStaticCollisionShape(PhysicsObject *physicsObject, const Model
         }
         physicsObject->collisionShape = new btBvhTriangleMeshShape{physicsObject->triangleMesh, true};
     }
+    //physicsObject->collisionShape = new btBoxShape(btVector3(0,0,0));
 }
 
 void Physics::loadDynamicCollisionShape(PhysicsObject* physicsObject, const Model &model)
@@ -114,7 +114,7 @@ void Physics::loadDynamicCollisionShape(PhysicsObject* physicsObject, const Mode
     physicsObject->dynamic = true;
     physicsObject->triangleMesh = nullptr;
     physicsObject->triangleMeshShape = nullptr;
-/*
+
     physicsObject->unoptimizedHull = new btConvexHullShape{};
     for (int j = 0; j < model.meshes.size(); ++j)
     {
@@ -133,7 +133,7 @@ void Physics::loadDynamicCollisionShape(PhysicsObject* physicsObject, const Mode
                 physicsObject->hullOptimizer->numVertices()};
 
         physicsObject->collisionShape = new btConvexHullShape{*physicsObject->hull};
-    }*/
-    physicsObject->collisionShape = new btSphereShape(1);
+    }
+    //physicsObject->collisionShape = new btCapsuleShape(0,10);
 
 }

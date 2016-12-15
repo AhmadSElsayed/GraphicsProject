@@ -22,7 +22,7 @@
 
 // Other Libs
 #include <SOIL/SOIL.h>
-#include "Sameh.h"
+#include "Physics.h"
 #include <btBulletDynamicsCommon.h>
 #include <btBulletCollisionCommon.h>
 #include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
@@ -41,7 +41,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void Do_Movement();
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(10.0f, 0.0f, 3.0f));
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -91,14 +91,23 @@ int main(int argc, char** argv)
    	//Model ourPlatform("Platform/untitled.obj");
     Physics* physics = new Physics();
 
-	//GraphicsObject* NanoSuit = new GraphicsObject("NanoSuit/nanosuit.obj", true);
-    //physics->add(NanoSuit, 10, glm::vec3(0,0,0));
+	GraphicsObject* NanoSuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true);
+    physics->add(NanoSuit, 10, glm::vec3(0,150,0));
+
+    physics->physicsObjects[0].object->setLinearFactor(btVector3(1,1,1));
+    physics->physicsObjects[0].object->setAngularFactor(btVector3(0,1,0));
+
+    //GraphicsObject* NanoStatic = new GraphicsObject(GLchar*)"NanoSuit/nanosuit.obj", true);
+    //physics->add(NanoStatic, 0, glm::vec3(0,1,0));
+
+    //GraphicsObject* super = new GraphicsObject(GLchar*)"Platform/untitled.obj", true);
+    //physics->add(super, 10, glm::vec3(0,150,0));
+
+    GraphicsObject* Platform = new GraphicsObject((GLchar*)"Platform/untitled.obj", true);
+    physics->add(Platform, 0, glm::vec3(0,0,0));
 
 
-    GraphicsObject* Platform = new GraphicsObject("Platform/untitled.obj", true);
-    physics->add(Platform, 10, glm::vec3(0,-10,0));
-
-	// Draw in wireframe
+    // Draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Game loop
@@ -127,8 +136,14 @@ int main(int argc, char** argv)
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-        //NanoSuit->graph(shader, projection, view);
-       Platform->graph(shader, projection, view);
+        NanoSuit->graph(shader, projection, view);
+
+        //NanoStatic->graph(shader, projection, view);
+
+        //super->graph(shader, projection, view);
+
+
+        Platform->graph(shader, projection, view);
 
 //        // Draw the loaded models
 //		glm::mat4 model;
