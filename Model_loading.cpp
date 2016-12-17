@@ -1,34 +1,11 @@
-// Include standard headers
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 #include <vector>
-
-#define GLFW_STATIC
-// Include GLEW
 #include <GL/glew.h>
-
-// Include GLFW
 #include <GLFW/glfw3.h>
-// GL includes
 #include "Shader.h"
 #include "Camera.h"
-#include "Model.h"
-
-// GLM Mathemtics
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-// Other Libs
-#include <SOIL/SOIL.h>
 #include "Physics.h"
 #include "third_person_camera.h"
-#include <btBulletDynamicsCommon.h>
-#include <btBulletCollisionCommon.h>
-#include <BulletCollision/BroadphaseCollision/btBroadphaseInterface.h>
-#include <BulletCollision/BroadphaseCollision/btDbvtBroadphase.h>
-#include <BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h>
 
 using namespace glm;
 
@@ -46,11 +23,11 @@ ThirdPersonCamera camera;
 const GLfloat CAMERA_FOVX = 80.0f;
 const GLfloat CAMERA_ZFAR = 1000.0f;
 const GLfloat CAMERA_ZNEAR = 0.1f;
-const GLfloat CAMERA_SPEED = 30.0f;
-const GLfloat CAMERA_SENSITIVITY = 0.25f;
+const GLfloat CAMERA_SPEED = 20.0f;
 //Player
-btRigidBody *Player;
+btRigidBody *Player = nullptr;
 const GLfloat PLAYER_SPEED = 50.0f;
+const GLfloat MOUSE_SENSTIVITY = 20.0f;
 //Controls
 bool keys[1024];
 GLfloat lastX = screenWidth / 2, lastY = screenHeight / 2;
@@ -81,7 +58,7 @@ int main(int argc, char** argv)
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// Options
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Initialize GLEW to setup the OpenGL Function pointers
 	glewExperimental = GL_TRUE;
@@ -117,7 +94,7 @@ int main(int argc, char** argv)
 	{
 
 		// Set frame time
-		GLfloat currentFrame = glfwGetTime();
+		GLfloat currentFrame = (GLfloat) glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
         Player->activate(true);
@@ -212,7 +189,6 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    glfwGetCursorPos(window, &xpos, &ypos);
     if (firstMouse)
 	{
 		lastX = xpos;
@@ -220,15 +196,18 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		firstMouse = false;
 	}
 
-	GLfloat xoffset = xpos - lastX;
-	GLfloat yoffset = lastY - ypos;
+	GLfloat xoffset = (xpos - lastX);
+	GLfloat yoffset = (lastY - ypos);
 
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.rotate(xoffset * 20.0f, yoffset * 20.0f);
-    glfwSetCursorPos(window, lastX, lastY);
+    if(abs(xoffset) < 5)
+        xoffset = 0;
+    if(abs(yoffset) < 5)
+        yoffset = 0;
 
+        camera.rotate(xoffset * MOUSE_SENSTIVITY, yoffset * MOUSE_SENSTIVITY);
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
