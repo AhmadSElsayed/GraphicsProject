@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Physics.h"
 #include "third_person_camera.h"
+#include "file.h"
 
 using namespace glm;
 
@@ -58,7 +59,7 @@ int main(int argc, char** argv)
 	glfwSetScrollCallback(window, scroll_callback);
 
 	// Options
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// Initialize GLEW to setup the OpenGL Function pointers
 	glewExperimental = GL_TRUE;
@@ -75,9 +76,9 @@ int main(int argc, char** argv)
 
     Physics* physics = new Physics();
 
-    GraphicsObject* Nanosuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true);
-    physics->add(Nanosuit, 10, glm::vec3(0,5,0));
-    Player = physics->physicsObjects[0].object;
+    //GraphicsObject* Nanosuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true);
+    //physics->add(Nanosuit, 10, glm::vec3(0,5,0));
+    //Player = physics->physicsObjects[0].object;
 
     GraphicsObject* Platform = new GraphicsObject((GLchar*)"Platform/new.obj", true);
     physics->add(Platform, 0, glm::vec3(0,0,0));
@@ -85,6 +86,12 @@ int main(int argc, char** argv)
 
     camera.perspective(CAMERA_FOVX, (float)screenWidth / (float)screenHeight, CAMERA_ZNEAR, CAMERA_ZFAR);
     camera.lookAt(Vector3(20,20,20), Vector3(0,10,0), Vector3(0,1,0));
+
+    vector<string> x = getFiles("Objects/");
+    for (int i = 0; i < x.size(); ++i)
+    {
+        physics->add(new GraphicsObject((GLchar *) x[i].c_str(), true), 0, vec3(i * i, i * i, i * i));
+    }
 
     // Draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -97,7 +104,8 @@ int main(int argc, char** argv)
 		GLfloat currentFrame = (GLfloat) glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-        Player->activate(true);
+        if(Player)
+            Player->activate(true);
 		physics->update(deltaTime);
 
 		// Check and call events
@@ -140,28 +148,32 @@ void Do_Movement()
         Vector3 x;
         x = Vector3(camera.getZAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getZAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target - x);
-        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
+        if(Player)
+            Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_S])
     {
         Vector3 x;
         x = Vector3(camera.getZAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getZAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target + x);
-        Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
+        if(Player)
+            Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_A])
     {
         Vector3 x;
         x = Vector3(camera.getXAxis().x * deltaTime * CAMERA_SPEED, 0,camera.getXAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target - x);
-        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
+        if(Player)
+            Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_D])
     {
         Vector3 x;
         x = Vector3(camera.getXAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getXAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target + x);
-        Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
+        if(Player)
+            Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_F])
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -183,7 +195,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     {
         keys[key] = false;
         if(key == GLFW_KEY_W || key == GLFW_KEY_A || key == GLFW_KEY_D || key == GLFW_KEY_S)
-           Player->setLinearVelocity(btVector3(0,0,0));
+            if(Player)
+                Player->setLinearVelocity(btVector3(0,0,0));
     }
 }
 
@@ -195,7 +208,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		lastY = ypos;
 		firstMouse = false;
 	}
-
 	GLfloat xoffset = (xpos - lastX);
 	GLfloat yoffset = (lastY - ypos);
 
