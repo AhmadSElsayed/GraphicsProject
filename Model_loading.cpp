@@ -48,7 +48,9 @@ const GLfloat CAMERA_ZFAR = 1000.0f;
 const GLfloat CAMERA_ZNEAR = 0.1f;
 const GLfloat CAMERA_SPEED = 30.0f;
 const GLfloat CAMERA_SENSITIVITY = 0.25f;
+//Player
 btRigidBody *Player;
+const GLfloat PLAYER_SPEED = 50.0f;
 //Controls
 bool keys[1024];
 GLfloat lastX = screenWidth / 2, lastY = screenHeight / 2;
@@ -99,15 +101,13 @@ int main(int argc, char** argv)
     GraphicsObject* Nanosuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true);
     physics->add(Nanosuit, 10, glm::vec3(0,5,0));
     Player = physics->physicsObjects[0].object;
-    physics->physicsObjects[0].object->setLinearFactor(btVector3(1,1,1));
-    physics->physicsObjects[0].object->setAngularFactor(btVector3(0,1,0));
 
     GraphicsObject* Platform = new GraphicsObject((GLchar*)"Platform/new.obj", true);
     physics->add(Platform, 0, glm::vec3(0,0,0));
 
 
     camera.perspective(CAMERA_FOVX, (float)screenWidth / (float)screenHeight, CAMERA_ZNEAR, CAMERA_ZFAR);
-    camera.lookAt(Vector3(20,20,20), Vector3(00,10,0), Vector3(0,1,0));
+    camera.lookAt(Vector3(20,20,20), Vector3(0,10,0), Vector3(0,1,0));
 
     // Draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -120,7 +120,7 @@ int main(int argc, char** argv)
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
+        Player->activate(true);
 		physics->update(deltaTime);
 
 		// Check and call events
@@ -163,28 +163,28 @@ void Do_Movement()
         Vector3 x;
         x = Vector3(camera.getZAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getZAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target - x);
-        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*10000);
+        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_S])
     {
         Vector3 x;
         x = Vector3(camera.getZAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getZAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target + x);
-        Player->setLinearVelocity(btVector3(x.x,0,x.z)*100);
+        Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_A])
     {
         Vector3 x;
         x = Vector3(camera.getXAxis().x * deltaTime * CAMERA_SPEED, 0,camera.getXAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target - x);
-        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*100);
+        Player->setLinearVelocity(-btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_D])
     {
         Vector3 x;
         x = Vector3(camera.getXAxis().x * deltaTime * CAMERA_SPEED, 0, camera.getXAxis().z * deltaTime * CAMERA_SPEED);
         camera.lookAt(camera.m_target + x);
-        Player->setLinearVelocity(btVector3(x.x,0,x.z)*100);
+        Player->setLinearVelocity(btVector3(x.x,0,x.z)*PLAYER_SPEED);
     }
     if (keys[GLFW_KEY_F])
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -206,7 +206,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     {
         keys[key] = false;
         if(key == GLFW_KEY_W || key == GLFW_KEY_A || key == GLFW_KEY_D || key == GLFW_KEY_S)
-            Player->setLinearVelocity(btVector3(0,0,0));
+           Player->setLinearVelocity(btVector3(0,0,0));
     }
 }
 

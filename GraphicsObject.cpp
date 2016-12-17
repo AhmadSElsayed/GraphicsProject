@@ -46,7 +46,7 @@ void GraphicsObject::setVisible(bool x)
 void GraphicsObject::Transform(btTransform trans)
 {
     trans.getOpenGLMatrix(glm::value_ptr(transformation));
-    std::cout << "sphere height: " << trans.getOrigin().getY() << std::endl;
+    std::cout << "x: " << trans.getOrigin().getX()<<"\ty:"<<trans.getOrigin().getY()<<"\tz:"<<trans.getOrigin().getZ()<< std::endl;
 }
 
 Model *GraphicsObject::getModel() {
