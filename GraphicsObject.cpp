@@ -15,6 +15,8 @@ GraphicsObject::GraphicsObject(GLchar* path, bool vis)
 
 void GraphicsObject::graph(Shader shader, glm::mat4 proj, glm::mat4 view)
 {
+    if(!visible)
+        return;
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(proj));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"),1, GL_FALSE, glm::value_ptr(transformation));

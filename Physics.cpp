@@ -81,7 +81,30 @@ void Physics::add(GraphicsObject *model, GLfloat mass, glm::vec3 initialPosition
 
 void Physics::loadStaticCollisionShape(PhysicsObject *physicsObject, const Model &model)
 {
-    physicsObject->dynamic = false;
+    physicsObject->dynamic = true;
+    physicsObject->triangleMesh = nullptr;
+    physicsObject->triangleMeshShape = nullptr;
+
+    physicsObject->unoptimizedHull = new btConvexHullShape{};
+    for (int j = 0; j < model.meshes.size(); ++j)
+    {
+        for (GLuint i =0; i<model.meshes[j].indices.size(); i++)
+        {
+            btVector3 vertex{model.meshes[j].vertices[i].Position.x,
+                             model.meshes[j].vertices[i].Position.y, model.meshes[j].vertices[i].Position.z};
+            physicsObject->unoptimizedHull->addPoint(vertex);
+        }
+
+        physicsObject->hullOptimizer = new btShapeHull{physicsObject->unoptimizedHull};
+        btScalar margin{physicsObject->unoptimizedHull->getMargin()};
+        physicsObject->hullOptimizer->buildHull(margin);
+        physicsObject->hull = new btConvexHullShape{
+                (btScalar *) physicsObject->hullOptimizer->getVertexPointer(),
+                physicsObject->hullOptimizer->numVertices()};
+
+        physicsObject->collisionShape = new btConvexHullShape{*physicsObject->hull};
+    }
+    /*physicsObject->dynamic = false;
     physicsObject->unoptimizedHull = nullptr;
     physicsObject->hullOptimizer = nullptr;
     physicsObject->hull = nullptr;
@@ -106,7 +129,7 @@ void Physics::loadStaticCollisionShape(PhysicsObject *physicsObject, const Model
         }
         physicsObject->collisionShape = new btBvhTriangleMeshShape{physicsObject->triangleMesh, true};
     }
-    //physicsObject->collisionShape = new btBoxShape(btVector3(0,0,0));
+    //physicsObject->collisionShape = new btBoxShape(btVector3(0,0,0));*/
 }
 
 void Physics::loadDynamicCollisionShape(PhysicsObject* physicsObject, const Model &model)
