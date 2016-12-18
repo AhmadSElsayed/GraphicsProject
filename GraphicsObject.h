@@ -17,8 +17,9 @@ private:
     bool visible;
     glm::mat4 transformation;
     Model* model;
+    bool done = false;
 public:
-    GraphicsObject(GLchar* path, bool vis);
+    GraphicsObject(GLchar* path, bool vis, bool env);
     void graph(Shader shader, glm::mat4 proj, glm::mat4 view);
     void hide();
     void setVisible(bool x);

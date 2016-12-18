@@ -31,9 +31,10 @@ public:
 	// Draws the model, and thus all its meshes
 	void Draw(Shader shader);
 
+    glm::vec3 center;
 	/*  Model Data  */
 	vector<Mesh> meshes;
-private:
+protected:
     string directory;
     vector<Texture> textures_loaded;	// Stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
 
@@ -48,5 +49,6 @@ private:
 
     // Checks all material textures of a given type and loads the textures if they're not loaded yet.
     // The required info is returned as a Texture struct.
-    vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+    virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
+
 };

@@ -2,7 +2,7 @@
 // Created by root on 12/14/16.
 //
 #include "Model.h"
-
+#include <assimp/ProccessHelper.h>
 
 Model::Model(GLchar *path) {
     this->loadModel(path);
@@ -20,20 +20,20 @@ vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
         aiString str;
         mat->GetTexture(type, i, &str);
         // Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
-        GLboolean skip = false;
+        GLboolean skip = (GLboolean) false;
         for (GLuint j = 0; j < textures_loaded.size(); j++)
         {
             if (textures_loaded[j].path == str)
             {
                 textures.push_back(textures_loaded[j]);
-                skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
+                skip = (GLboolean) true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
                 break;
             }
         }
         if (!skip)
         {   // If texture hasn't been loaded already, load it
             Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
+            texture.id = (GLuint) TextureFromFile(str.C_Str(), this->directory);
             texture.type = typeName;
             texture.path = str;
             textures.push_back(texture);
@@ -133,6 +133,11 @@ void Model::processNode(aiNode *node, const aiScene *scene) {
         // The node object only contains indices to index the actual objects in the scene.
         // The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        aiVector3D x;
+        //FindMeshCenter(mesh, x);
+        center.x = x.x;
+        center.y = x.y;
+        center.z = x.z;
         this->meshes.push_back(this->processMesh(mesh, scene));
     }
     // After we've processed all of the meshes (if any) we then recursively process each of the children nodes

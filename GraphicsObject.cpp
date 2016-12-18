@@ -5,10 +5,21 @@
 #include<iostream>
 using namespace std;
 #include "GraphicsObject.h"
+#include "Environment.h"
 
-GraphicsObject::GraphicsObject(GLchar* path, bool vis)
+GraphicsObject::GraphicsObject(GLchar* path, bool vis, bool env)
 {
-    model = new Model(path);
+    if(!env)
+        model = new Model(path);
+    else
+    {
+        if(!done)
+        {
+            Environment::Texturize("gray_floor_texture-wallpaper-1366x768.jpg", "Platform");
+            done = true;
+        }
+        model = new Environment(path);
+    }
     visible = vis;
     transformation = glm::scale(transformation, glm::vec3(0.2f,0.2f,0.2f));
 }

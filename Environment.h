@@ -6,9 +6,15 @@
 #define LOADER_ENVIRONMENT_H
 
 
-class Environment
-{
+#include "Model.h"
 
+class Environment : public Model
+{
+public:
+    Environment(GLchar *path);
+    static int ID;
+    static void Texturize(const char* path, string directory);
+    virtual vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 };
 
 

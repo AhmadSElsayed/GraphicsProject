@@ -76,21 +76,22 @@ int main(int argc, char** argv)
 
     Physics* physics = new Physics();
 
-    //GraphicsObject* Nanosuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true);
-    //physics->add(Nanosuit, 10, glm::vec3(0,5,0));
-    //Player = physics->physicsObjects[0].object;
+    GraphicsObject* Nanosuit = new GraphicsObject((GLchar*)"NanoSuit/nanosuit.obj", true, false);
+    physics->add(Nanosuit, 10, glm::vec3(0,5,0));
+    Player = physics->physicsObjects[0].object;
 
-    GraphicsObject* Platform = new GraphicsObject((GLchar*)"Platform/new.obj", true);
+    GraphicsObject* Platform = new GraphicsObject((GLchar*)"Platform/new.obj", true, false);
     physics->add(Platform, 0, glm::vec3(0,0,0));
 
 
     camera.perspective(CAMERA_FOVX, (float)screenWidth / (float)screenHeight, CAMERA_ZNEAR, CAMERA_ZFAR);
     camera.lookAt(Vector3(20,20,20), Vector3(0,10,0), Vector3(0,1,0));
 
-    vector<string> x = getFiles("Objects/");
-    for (int i = 0; i < x.size(); ++i)
+    vector<string> x = getFiles((char *) "Objects/");
+    for (int i = 0; i < 50; ++i)
     {
-        physics->add(new GraphicsObject((GLchar *) x[i].c_str(), true), 0, vec3(i * i, i * i, i * i));
+        auto temp = new GraphicsObject((GLchar *) x[i].c_str(), true, true);
+        physics->add(temp, 0, temp->getModel()->center);
     }
 
     // Draw in wireframe
